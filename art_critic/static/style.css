@@ -1,0 +1,304 @@
+:root {
+  color-scheme: light;
+  --page: #f4f4f1;
+  --surface-1: #fcfcfb;
+  --border: #dedcd5;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #86857f;
+  --grid-line: #e6e5df;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --accent: #2a78d6;
+  --accent-ink: #ffffff;
+  --star: #c98500;
+  --idle: #b3b1a9;
+  --tile: #e9e8e3;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #111110;
+    --surface-1: #1a1a19;
+    --border: #33322f;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8b8a82;
+    --grid-line: #2a2927;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --accent: #3987e5;
+    --accent-ink: #ffffff;
+    --star: #eda100;
+    --idle: #5e5d58;
+    --tile: #262624;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text-primary);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+h1, h2, h3, p, dl, dd { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 14px; padding: 14px 110px 0 20px; }
+.top h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
+.top p { color: var(--text-secondary); }
+.top .sub { flex-basis: 100%; margin-top: 2px; color: var(--text-muted); font-size: 13px; }
+.tools { position: fixed; top: 12px; right: 20px; z-index: 2; display: flex; gap: 8px; }
+
+main { padding: 26px 20px 40px; }
+/* With the panel open, the page centers in what is left beside it. */
+@media (min-width: 1000px) {
+  .show-panel .top { padding-right: 420px; }
+  .show-panel main { padding-right: 420px; }
+}
+
+/* -- the round ---------------------------------------------------------- */
+
+/* The images sit in the middle of the page; everything else lines up under them. */
+.round { display: flex; flex-direction: column; align-items: center; }
+.condition { width: 100%; margin-top: 40px; text-align: center; }
+.cond-now { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0 22px; }
+/* A heading that is also a menu: no box, just the text and a caret. */
+.chooser {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28em;
+  border-radius: 8px;
+  font-weight: 750;
+  line-height: 1.1;
+  cursor: pointer;
+}
+.chooser::after {
+  content: "";
+  flex: none;
+  width: 0.3em;
+  height: 0.3em;
+  border: solid currentColor;
+  border-width: 0 0.11em 0.11em 0;
+  /* Points up, at the images being judged under this condition. */
+  transform: translateY(-0.12em) rotate(-135deg);
+  opacity: 0.45;
+  transition: opacity 0.12s;
+}
+.chooser:hover::after, .chooser:focus-within::after { opacity: 1; }
+.chooser:has(select:focus-visible) { outline: 2px solid var(--text-secondary); outline-offset: 5px; }
+.chooser select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+.chooser.axis { font-size: 20px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); transition: color 0.12s; }
+.chooser.axis:hover, .chooser.axis:focus-within { color: var(--text-primary); }
+.chooser.value { font-size: 50px; letter-spacing: -0.03em; }
+.chooser h2 { font: inherit; letter-spacing: inherit; }
+/* Condition switched off for this round: struck out, so it reads as not in play. */
+.condition.free .chooser { opacity: 0.15; text-decoration: line-through; text-decoration-thickness: 0.08em; }
+.condition.free .chooser::after { visibility: hidden; }
+/* A quiet gray chip, never a bright fill: pressed, it only brightens its outline and text. */
+.quiet.pill { align-self: center; padding: 4px 11px; border-radius: 999px; white-space: nowrap; color: var(--idle); border-color: var(--grid-line); font-size: 12px; }
+.quiet.pill:hover { color: var(--text-secondary); border-color: var(--border); }
+.quiet.pill[aria-pressed="true"] { background: transparent; color: var(--text-secondary); border-color: var(--text-muted); }
+.pill .key { margin: 0 0 0 8px; }
+.show-keys .pill .key { display: inline; }
+.pill[aria-pressed="true"] .key { color: inherit; }
+.condition .meta { margin-top: 6px; color: var(--text-secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
+.condition input {
+  display: block;
+  width: min(100%, 440px);
+  margin: 8px auto 0;
+  padding: 6px 0;
+  text-align: center;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: border-color 0.12s;
+}
+.condition input::placeholder { color: var(--text-muted); }
+.condition input:focus { border-bottom-color: var(--text-primary); }
+.quiet[aria-pressed="true"] { background: var(--text-primary); border-color: var(--text-primary); color: var(--surface-1); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  /* Keep all four tiles and their controls on screen without scrolling. */
+  max-width: max(420px, calc(100vh - 380px));
+}
+.tile { margin: 0; min-width: 0; }
+.pic {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--tile);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.12s;
+}
+.pic img, .pic video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pic:hover { outline-color: var(--border); }
+.pic:focus-visible { outline-color: var(--text-secondary); }
+.pic[aria-pressed="true"] { outline: 4px solid var(--accent); }
+.pic .num, .pic .badge {
+  position: absolute;
+  top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+/* The item's number is its favorite key: shown on hover, or with the rest of the key hints. */
+.pic .num { left: 8px; background: rgb(0 0 0 / 0.55); color: #fff; opacity: 0; transition: opacity 0.12s; }
+.pic:hover .num, .pic:focus-visible .num, .show-keys .pic .num { opacity: 1; }
+.pic .badge { right: 8px; background: var(--accent); color: var(--accent-ink); display: none; }
+.pic[aria-pressed="true"] .badge { display: block; }
+
+.controls { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; padding: 8px 2px 0; }
+/* The key that presses a control, printed under it when key hints are on. */
+.key {
+  display: none;
+  margin-top: 4px;
+  font: 600 11px/1 ui-monospace, monospace;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.show-keys .key { display: block; }
+.thumbs { display: flex; gap: 6px; }
+.thumbs button { padding: 0; border: 0; background: none; }
+.thumbs .cap {
+  width: 36px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--idle);
+}
+.thumbs svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.thumbs .down svg { transform: rotate(180deg); }
+.thumbs button:hover .cap { color: var(--text-primary); border-color: var(--text-muted); }
+.thumbs button[aria-pressed="true"] .cap { background: var(--text-primary); border-color: var(--text-primary); color: var(--surface-1); }
+
+.stars { display: flex; }
+.stars button { border: 0; background: none; padding: 2px 2px 0; }
+.stars .glyph { display: block; font-size: 21px; line-height: 1; color: var(--border); }
+.stars button.on .glyph { color: var(--star); }
+.stars:hover .glyph { color: var(--star); }
+.stars button:hover ~ button .glyph { color: var(--border); }
+
+.actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 16px; margin-top: 12px; }
+#status { color: var(--text-secondary); font-size: 14px; }
+/* The keys that have no control of their own; shown with the rest of the key hints. */
+.legend-keys { display: none; color: var(--text-muted); font-size: 13px; }
+.legend-keys b { font: 600 12px ui-monospace, monospace; color: var(--text-secondary); }
+.show-keys .legend-keys { display: inline; }
+.quiet.help { flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; line-height: 1; font-weight: 600; background: var(--page); }
+.help svg { display: block; width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+/* -- side panel --------------------------------------------------------- */
+
+/* A drawer over the right edge, closed until asked for. */
+aside {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  width: min(400px, 100vw);
+  padding: 56px 20px 24px;
+  overflow-y: auto;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  background: var(--page);
+  border-left: 1px solid var(--border);
+  visibility: hidden;
+  transform: translateX(100%);
+  transition: transform 0.18s ease, visibility 0s 0.18s;
+}
+.show-panel aside { visibility: visible; transform: none; transition: transform 0.18s ease; }
+@media (prefers-reduced-motion: reduce) {
+  aside, .show-panel aside { transition: none; }
+}
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px 16px; }
+.card h3 { font-size: 14px; font-weight: 650; }
+.note { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+.empty { color: var(--text-muted); font-size: 13px; padding: 10px 0 2px; }
+
+.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.strip img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; display: block; background: var(--tile); }
+.strip .empty { grid-column: 1 / -1; padding-top: 0; }
+
+.pairs { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; margin-top: 10px; font-size: 13px; }
+.pairs dt { color: var(--text-muted); }
+.pairs dd b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.pairs .empty { grid-column: 1 / -1; padding: 0; }
+.for-cond { color: var(--text-muted); font-weight: 500; }
+
+.counts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 14px; }
+.counts dt { color: var(--text-muted); font-size: 12px; }
+.counts dd { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.quiet {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.quiet:hover { color: var(--text-primary); border-color: var(--text-muted); }
+
+/* -- chart -------------------------------------------------------------- */
+
+.chart { position: relative; margin-top: 10px; }
+.chart .headline { display: flex; align-items: baseline; gap: 8px; }
+.chart .headline b { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.chart .headline span { color: var(--text-secondary); font-size: 13px; }
+.chart svg { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
+.chart .gridline { stroke: var(--grid-line); stroke-width: 1; }
+.chart .chance { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.chart .line { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { fill: var(--series-1); stroke: var(--surface-1); stroke-width: 2; }
+.chart .line.match { stroke: var(--series-2); }
+.chart .dot.match { fill: var(--series-2); }
+.chart .legend { display: flex; gap: 14px; margin-top: 8px; color: var(--text-secondary); font-size: 12px; }
+.chart .legend i { display: inline-block; width: 14px; height: 2px; margin-right: 6px; vertical-align: middle; background: var(--series-1); }
+.chart .legend i.match { background: var(--series-2); }
+.chart .cross { stroke: var(--text-muted); stroke-width: 1; }
+.chart text { fill: var(--text-muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+.chart .tip {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+}

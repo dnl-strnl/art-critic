@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art Critic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎭</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Art Critic</h1>
+  <p>Teach a model your taste, one prompt at a time.</p>
+  <p class="sub">A prompt sets the alignment task. Your taste picks the winner.</p>
+</header>
+<div class="tools">
+  <button id="panel-toggle" class="quiet help" type="button" aria-pressed="false" aria-label="Show what the model has learned" aria-controls="panel"
+    title="\ shows or hides what the model has learned."><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M10 2.5v11"/></svg></button>
+  <button id="keys" class="quiet help" type="button" aria-pressed="false" aria-label="Show the key for every control"
+    title="? shows or hides the key for every control. Enter submits or skips, 0 auto-rotates, - switches the condition off for this round, / describes your own condition, \ opens the panel, Esc goes back.">?</button>
+</div>
+
+<main>
+  <section class="round" aria-labelledby="cond-value">
+    <div id="grid" class="grid"></div>
+
+    <form id="cond-form" class="condition">
+      <!-- Each heading is its own menu: the native select lies invisibly over the text it changes. -->
+      <div class="cond-now">
+        <div class="chooser axis"><span id="cond-axis"></span><select id="axis" aria-label="Condition axis"></select></div>
+        <div class="chooser value"><h2 id="cond-value"></h2><select id="value" aria-label="Condition value"></select></div>
+        <button id="free" class="quiet pill" type="button" aria-pressed="false"
+          title="Judge these four without the condition: just your general favorite. Press - to switch.">no condition<span class="key">-</span></button>
+      </div>
+      <p id="cond-meta" class="meta"></p>
+      <input id="text" type="text" placeholder="or describe your own, e.g. vaporwave nostalgia" aria-label="Your own condition">
+    </form>
+
+    <div class="actions">
+      <span id="status" role="status"></span>
+      <span class="legend-keys"><b>Enter</b> submit or skip · <b>0</b> auto-rotate · <b>-</b> no condition · <b>/</b> describe your own · <b>\</b> panel · <b>Esc</b> back</span>
+    </div>
+  </section>
+
+  <!-- What the model has learned: a drawer, so the images keep the page to themselves. -->
+  <aside id="panel">
+    <section class="card">
+      <h3>Is it learning your preference?</h3>
+      <p class="note">How often each guess, made before you answered, was your favorite. Rolling 10 rounds.</p>
+      <div id="chart" class="chart"></div>
+    </section>
+
+    <section class="card">
+      <h3>Predicted favorites <span class="for-cond"></span></h3>
+      <p class="note" id="fav-note"></p>
+      <div id="favorites" class="strip"></div>
+    </section>
+
+    <section class="card">
+      <h3>Predicted least-liked <span class="for-cond"></span></h3>
+      <div id="least" class="strip"></div>
+    </section>
+
+    <section class="card">
+      <h3>Your stars by condition</h3>
+      <p class="note">Average rating you gave under each condition, best first.</p>
+      <dl id="by-condition" class="pairs"></dl>
+    </section>
+
+    <section class="card">
+      <h3>Taste across all conditions</h3>
+      <p class="note">Conditions closest to what you like regardless of the prompt. A rough reading.</p>
+      <dl id="lean" class="pairs"></dl>
+    </section>
+
+    <section class="card">
+      <h3>Feedback so far</h3>
+      <dl id="counts" class="counts"></dl>
+      <button id="reset" class="quiet" type="button">Reset and start over</button>
+    </section>
+  </aside>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
